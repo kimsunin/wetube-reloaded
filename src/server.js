@@ -1,29 +1,17 @@
 import express from "express";
+import morgan from "morgan";
+import globalRouter from "./routers/globalRouter";
+import userRouter from "./routers/userRouter";
+import videoRouter from "./routers/videoRouter";
 
 const app = express();
 
-const loggerMiddleWare = (req, res, next) => {
-  console.log(`${req.method}:${req.url}`);
-  next(); //loggerMiddleWare 다음함수를 호출
-};
+const middleWare = morgan("dev");
+app.use(middleWare);
 
-const privateMiddleWare = (req, res, next) => {
-  const url = req.url;
-  if (url === "/projected") {
-    return res.send("허용되지 않음");
-  } else {
-    console.log("다음함수");
-    next();
-  }
-};
-
-const handleHome = (req, res) => {
-  return res.send("홈 응답");
-};
-
-app.use(loggerMiddleWare);
-app.use(privateMiddleWare);
-app.get("/", handleHome); //get:request중의 하나(브라우저가 / url에 get요청을 보냄)
+app.use("/videos", videoRouter);
+app.use("/users", userRouter);
+app.use("/", globalRouter);
 
 const PORT = 4000;
 
